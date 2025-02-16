@@ -89,7 +89,7 @@ public class CachedCalculatorTest
         var ex = Assert.Throws<ArgumentException>(() => calc.Factorial(invalidNumber));
 
         //Assert
-        Assert.That(ex.Message, Is.EqualTo("Negative numbers not allowed"));
+        Assert.That(ex.Message, Is.EqualTo("Factorial is not defined for negative numbers"));
     }
 
     [Test]
