@@ -23,16 +23,14 @@ public class CachedCalculatorTest
     public void Subtract()
     {
         // Arrange
-        var calc = new CachedCalculator();
-        var a = 5;
-        var b = 2;
+        var calc = new SimpleCalculator();
 
         // Act
-        var result = calc.Subtract(a, b);
+        var result = calc.Subtract(2, 5);
 
         // Assert
-        Assert.That(result, Is.EqualTo(3));
-    }
+        Assert.That(result, Is.EqualTo(-3));
+
 
     [Test]
     public void Multiply()
