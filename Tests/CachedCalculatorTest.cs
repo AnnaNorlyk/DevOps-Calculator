@@ -161,4 +161,33 @@ public class CachedCalculatorTest
         // Assert
         Assert.That(result, Is.True);
     }
+
+
+    //Mutants
+    [Test]
+    public void Factorial_One()
+    {
+        // Arrange
+        var calc = new SimpleCalculator();
+
+        // Act
+        var result = calc.Factorial(1);
+
+        // Assert
+        Assert.That(result, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void Factorial_LargeNumber()
+    {
+        // Arrange
+        var calc = new SimpleCalculator();
+
+        // Act
+        var result = calc.Factorial(6);
+
+        // Assert
+        Assert.That(result, Is.EqualTo(720));
+    }
+
 }
