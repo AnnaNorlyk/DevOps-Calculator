@@ -26,11 +26,12 @@ public class SimpleCalculatorTest
         var calc = new SimpleCalculator();
 
         // Act
-        var result = calc.Subtract(5, 2);
+        var result = calc.Subtract(2, 5);
 
         // Assert
-        Assert.That(result, Is.EqualTo(3));
+        Assert.That(result, Is.EqualTo(-3));
     }
+
 
     [Test]
     public void Multiply()
@@ -100,8 +101,10 @@ public class SimpleCalculatorTest
         // Arrange
         var calc = new SimpleCalculator();
 
-        // Act & Assert
+        // Act
         var ex = Assert.Throws<ArgumentException>(() => calc.Factorial(-1));
+
+        //Assert
         Assert.That(ex.Message, Is.EqualTo("Factorial is not defined for negative numbers"));
     }
 
