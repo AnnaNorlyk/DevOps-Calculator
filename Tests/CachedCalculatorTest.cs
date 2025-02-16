@@ -161,6 +161,22 @@ public class CachedCalculatorTest
         Assert.That(result, Is.True);
     }
 
+    [Test]
+    public void IsPrime_Four_False()
+    {
+        // Arrange
+        var calc = new CachedCalculator();
+        var n = 4;
+
+        // Act
+        calc.IsPrime(n);
+        var result = calc.IsPrime(n);
+
+        // Assert
+        Assert.That(result, Is.False); 
+    }
+
+
 
     //Mutants
     [Test]
@@ -188,5 +204,55 @@ public class CachedCalculatorTest
         // Assert
         Assert.That(result, Is.EqualTo(720));
     }
+
+    [Test]
+    public void Add_CachesResult()
+    {
+        // Arrange
+        var calc = new CachedCalculator();
+        var x = 7;
+        var y = 4;
+
+        // Act
+        calc.Add(x, y);
+
+        // Assert
+        Assert.That(calc._cache.Count, Is.EqualTo(1)); 
+    }
+
+    [Test]
+    public void Add_ReturnsCachedValue()
+    {
+        // Arrange
+        var calc = new CachedCalculator();
+        var a = 6;
+        var b = 2;
+        calc.Add(a, b); 
+
+        // Act
+        var result = calc.Add(a, b);
+
+        // Assert
+        Assert.That(result, Is.EqualTo(8));
+    }
+
+    [Test]
+    public void Add_HandlesMultipleInputs()
+    {
+        // Arrange
+        var calc = new CachedCalculator();
+        var p = 10;
+        var l = 5;
+        var m = 2;
+        calc.Add(p, l);
+        calc.Add(l, m); 
+
+        // Act
+        var result = calc.Add(l, m);
+
+        // Assert
+        Assert.That(result, Is.EqualTo(7)); 
+    }
+
 
 }
