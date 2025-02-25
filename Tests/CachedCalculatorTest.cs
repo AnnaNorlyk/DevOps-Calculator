@@ -217,7 +217,7 @@ public class CachedCalculatorTest
         calc.Add(x, y);
 
         // Assert
-        Assert.That(calc._cache, Has.Count.EqualTo(1));
+        Assert.That(calc.Cache, Has.Count.EqualTo(1));
     }
 
     [Test]
