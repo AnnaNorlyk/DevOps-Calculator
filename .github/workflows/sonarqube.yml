@@ -7,12 +7,12 @@ on:
 
 jobs:
   integration:
-    runs-on: ubuntu-latest  # Specify a runner
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Fetch all history for accurate results of code analysis
+          fetch-depth: 0 
 
       - name: Install required tools
         run: |
