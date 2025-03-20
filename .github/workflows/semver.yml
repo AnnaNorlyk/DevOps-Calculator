@@ -44,7 +44,6 @@ jobs:
 
       # Release notes
       - name: Create release notes
-        if: ${{ steps.semver-app.outputs.version_changed == 'true' }}
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.semver-app.outputs.version }}
