@@ -13,10 +13,21 @@ string connString = builder.Configuration.GetConnectionString("DefaultConnection
 
 
 builder.Services.AddSingleton(new HistoryService(connString));
-
-// Register calculatorsbuilder.Services.AddSingleton<SimpleCalculator>();
 builder.Services.AddSingleton<CachedCalculator>();
+builder.Services.AddSingleton<SimpleCalculator>();
 
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocal3000",
+        policyBuilder =>
+        {
+            policyBuilder
+                .WithOrigins("http://localhost:3000")
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        });
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
