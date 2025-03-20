@@ -1,0 +1,54 @@
+name: SemVer
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  delivery:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Application Version
+        id: semver-app
+        uses: paulhatch/semantic-version@v5.4.0
+        with:
+          bump_each_commit: true
+
+      # Log in to GitHub Container Registry (GHCR)
+      - name: Log in to GHCR
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Convert Repository name to lowercase
+      - name: Convert Repository Name to Lowercase
+        id: repo_name
+        run: echo "REPO_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      # Combine build & push into one 
+      - name: Build and Push Docker image
+        run: |
+          docker build -t ghcr.io/${{ env.REPO_NAME }}/calculator-api:staging \
+                 -t ghcr.io/${{ env.REPO_NAME }}/calculator-api:${{ steps.semver-app.outputs.version }} \
+                 -f ./API/Dockerfile .
+
+          docker push ghcr.io/${{ env.REPO_NAME }}/calculator-api:staging
+          docker push ghcr.io/${{ env.REPO_NAME }}/calculator-api:${{ steps.semver-app.outputs.version }}
+
+      # Release notes
+      - name: Create release notes
+        if: ${{ steps.semver-app.outputs.version_changed == 'true' }}
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.semver-app.outputs.version }}
+          generateReleaseNotes: true
+          body: |
+            This release includes the following container image:
+            http://ghcr.io/${{ env.REPO_NAME }}/calculator-api:${{ steps.semver-app.outputs.version }}

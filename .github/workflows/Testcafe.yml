@@ -1,0 +1,49 @@
+name: E2E-Testcafe
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install Node + Dependencies
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+
+      - name: Start Docker Compose
+        run: docker compose up -d
+
+
+      - name: Wait for containers
+        run: sleep 20
+
+
+      - name: Install Chromium
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser \
+                                 libnss3 libxss1 fonts-liberation
+
+      - name: Install TestCafe
+        run: npm i -g testcafe
+
+      - name: Run TestCafe tests
+        env:
+          STAGING_REACT_URL: "http://localhost:3000"
+        run: |
+          testcafe 'chromium:headless' E2E/e2eTest.js --reporter spec
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: TestCafeReport
+          path: testcafe-result.json

@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+  mariadb:
+    image: mariadb:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      MYSQL_DATABASE: "${MYSQL_DATABASE}"
+      MYSQL_USER: "${MYSQL_USER}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+    ports:
+      - "3306:3306"
+
+  api:
+    image: ghcr.io/annanorlyk/devops-calculator-api:staging
+    depends_on:
+      - mariadb
+    ports:
+      - "5153:5153"
+    environment:
+      ASPNETCORE_URLS: "http://+:5153"
+      ASPNETCORE_ENVIRONMENT: "Development"
+      DB_HOST: "mariadb"
+      DB_NAME: "${MYSQL_DATABASE}"
+      DB_USER: "${MYSQL_USER}"
+      DB_PASSWORD: "${MYSQL_PASSWORD}"
+    entrypoint: /bin/sh
+    command: -c "sleep 20 && dotnet /app/API.dll"
+
+  flyway:
+    image: flyway/flyway:latest
+    container_name: flyway
+    depends_on:
+      - mariadb
+    volumes:
+      - ./db/migrations:/flyway/sql
+    entrypoint: ["sh", "-c", "sleep 20 && flyway migrate"]
+    environment:
+      - FLYWAY_URL=jdbc:mariadb://mariadb:3306/${MYSQL_DATABASE}
+      - FLYWAY_USER=${MYSQL_USER}
+      - FLYWAY_PASSWORD=${MYSQL_PASSWORD}
+      
+      
+  frontend:
+    image: ghcr.io/annanorlyk/devops-calculator-frontend:staging
+    ports:
+    - "3000:80"
+    depends_on:
+    - api
+    environment:
+      REACT_APP_BASE_URL: "http://api:5153"

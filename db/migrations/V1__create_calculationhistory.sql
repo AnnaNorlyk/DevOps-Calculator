@@ -1,0 +1,8 @@
+CREATE TABLE CalculationHistory (
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    Operation VARCHAR(50) NOT NULL,
+    OperandA INT NOT NULL,
+    OperandB INT NULL,
+    Result DOUBLE NOT NULL,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
