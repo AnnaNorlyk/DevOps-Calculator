@@ -1,12 +1,9 @@
-namespace Calculator.Services
+public class CalculationRecord
 {
-    public class CalculationHistory
-    {
-        public int Id { get; set; }
-        public string Operation { get; set; } = string.Empty;
-        public int? OperandA { get; set; }
-        public int? OperandB { get; set; }
-        public double Result { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    }
+    public int Id { get; set; }
+    public string Operation { get; set; } = null!;
+    public int? OperandA { get; set; }
+    public int? OperandB { get; set; }
+    public double Result { get; set; }
+    public DateTime CreatedAt { get; set; }
 }

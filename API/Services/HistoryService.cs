@@ -35,16 +35,7 @@ namespace Calculator.Services
             cmd.ExecuteNonQuery();
         }
 
-        public class CalculationRecord
-        {
-            public int Id { get; set; }
-            public string Operation { get; set; }
-            public int? OperandA { get; set; }
-            public int? OperandB { get; set; }
-            public double Result { get; set; }
-            public DateTime CreatedAt { get; set; }
-        }
-        public List<CalculationRecord> GetLatestCalculations()
+        public List<CalculationHistory> GetLatestCalculations()
         {
             const string selectSql = @"
                 SELECT Id, Operation, OperandA, OperandB, Result, CreatedAt
@@ -52,7 +43,7 @@ namespace Calculator.Services
                 ORDER BY Id DESC
                 LIMIT 5";
 
-            var calculations = new List<CalculationRecord>();
+            var calculations = new List<CalculationHistory>();
 
             using var con = new MySqlConnection(_connectionString);
             con.Open();
@@ -62,7 +53,7 @@ namespace Calculator.Services
 
             while (reader.Read())
             {
-                var record = new CalculationRecord
+                var record = new CalculationHistory
                 {
                     Id        = reader.GetInt32("Id"),
                     Operation = reader.GetString("Operation"),
