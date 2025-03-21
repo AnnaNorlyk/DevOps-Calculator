@@ -8,18 +8,30 @@ on:
 jobs:
   delivery:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
+      # 1. Check out all commits and tags (fetch-depth: 0)
+      - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Application Version
-        id: semver-app
+      # 2. Bump version according to commit history (or each commit)
+      - name: Determine Semantic Version
+        id: semver_app
         uses: paulhatch/semantic-version@v5.4.0
         with:
           bump_each_commit: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      # Log in to GitHub Container Registry (GHCR)
+      # 3. Push new tag so subsequent runs see the updated version
+      - name: Push updated tag
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git tag "v${{ steps.semver_app.outputs.version }}"
+          git push origin "v${{ steps.semver_app.outputs.version }}"
+
+      # 4. Log in to GitHub Container Registry (GHCR)
       - name: Log in to GHCR
         uses: docker/login-action@v2
         with:
@@ -27,27 +39,28 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.CR_PAT }}
 
-      # Convert Repository name to lowercase
+      # 5. Convert repository name to lowercase (helpful if you have uppercase letters in org/user/repo name)
       - name: Convert Repository Name to Lowercase
         id: repo_name
         run: echo "REPO_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
-      # Combine build & push into one 
+      # 6. Build and push Docker images to GHCR
       - name: Build and Push Docker image
         run: |
-          docker build -t ghcr.io/${{ env.REPO_NAME }}/calculator-api:staging \
-                 -t ghcr.io/${{ env.REPO_NAME }}/calculator-api:${{ steps.semver-app.outputs.version }} \
-                 -f ./API/Dockerfile .
-
+          docker build \
+            -t ghcr.io/${{ env.REPO_NAME }}/calculator-api:staging \
+            -t ghcr.io/${{ env.REPO_NAME }}/calculator-api:${{ steps.semver_app.outputs.version }} \
+            -f ./API/Dockerfile .
+          
           docker push ghcr.io/${{ env.REPO_NAME }}/calculator-api:staging
-          docker push ghcr.io/${{ env.REPO_NAME }}/calculator-api:${{ steps.semver-app.outputs.version }}
+          docker push ghcr.io/${{ env.REPO_NAME }}/calculator-api:${{ steps.semver_app.outputs.version }}
 
-      # Release notes
-      - name: Create release notes
+      # 7. Create or update a release with generated notes
+      - name: Create Release
         uses: ncipollo/release-action@v1
         with:
-          tag: ${{ steps.semver-app.outputs.version }}
+          tag: ${{ steps.semver_app.outputs.version }}
           generateReleaseNotes: true
           body: |
             This release includes the following container image:
-            http://ghcr.io/${{ env.REPO_NAME }}/calculator-api:${{ steps.semver-app.outputs.version }}
+            ghcr.io/${{ env.REPO_NAME }}/calculator-api:${{ steps.semver_app.outputs.version }}

@@ -6,7 +6,7 @@ public static class CalculatorEndpoints
 {
     public static void MapCalculatorEndpoints(this WebApplication app)
     {
-        // SIMPLE
+        // ============================== SIMPLE ==========================
         app.MapGet("api/simple/add", (int a, int b, SimpleCalculator calc, HistoryService history) =>
         {
             var result = calc.Add(a, b);
@@ -57,7 +57,7 @@ public static class CalculatorEndpoints
             return Results.Ok(isPrime);
         });
 
-        // CACHED
+        // ======================== CACHED ==================================
         app.MapGet("api/cached/add", (int a, int b, CachedCalculator calc, HistoryService history) =>
         {
             var result = calc.Add(a, b);
@@ -108,10 +108,10 @@ public static class CalculatorEndpoints
             return Results.Ok(isPrime);
         });
 
-        // Show the last 5 calculations
-        app.MapGet("api/memory", (HistoryService history) =>
+
+        app.MapGet("api/history", (HistoryService history) =>
         {
-            var calculations = history.GetLatestCalculations();
+            var calculations = history.GetLatestCalculations(); 
             return Results.Ok(calculations);
         });
     }
