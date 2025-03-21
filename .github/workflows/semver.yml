@@ -21,7 +21,7 @@ jobs:
         uses: paulhatch/semantic-version@v5.4.0
         with:
           bump_each_commit: true
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+
 
       # Push new tag so subsequent runs see the updated version
       - name: Push updated tag
