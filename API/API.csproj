@@ -14,5 +14,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Calculator\Calculator.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Services\HistoryService.cs" />
+    <Compile Include="Services\CalculationRecord.cs" />
+  </ItemGroup>
 
 </Project>
