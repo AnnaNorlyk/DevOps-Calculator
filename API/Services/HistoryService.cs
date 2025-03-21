@@ -27,10 +27,13 @@ namespace Calculator.Services
             con.Open();
 
             using var cmd = new MySqlCommand(insertSql, con);
+
             cmd.Parameters.AddWithValue("@op", operationName);
             cmd.Parameters.AddWithValue("@a", operandA.HasValue ? operandA : (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@b", operandB.HasValue ? operandB : (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@res", result);
+
+            cmd.ExecuteNonQuery();
 
             cmd.ExecuteNonQuery();
         }
