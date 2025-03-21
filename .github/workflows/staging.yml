@@ -18,7 +18,7 @@ jobs:
               # Log in to GHCR
               echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
     
-              # API image (build from root so Docker sees both API/ and Calculator/)
+              # API image 
               docker build \
                 -t ghcr.io/annanorlyk/devops-calculator-api:staging \
                 -f API/Dockerfile \
@@ -26,7 +26,7 @@ jobs:
     
               docker push ghcr.io/annanorlyk/devops-calculator-api:staging
     
-              # Frontend image (unchanged, uses 'frontend' folder as context)
+              # Frontend image 
               docker build \
                 -t ghcr.io/annanorlyk/devops-calculator-frontend:staging \
                 -f frontend/Dockerfile \
