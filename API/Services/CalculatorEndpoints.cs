@@ -1,6 +1,8 @@
 using Calculator;
 using Calculator.Services;
 using Microsoft.AspNetCore.Builder;
+using MySql.Data.MySqlClient;
+
 
 public static class CalculatorEndpoints
 {
@@ -107,20 +109,22 @@ public static class CalculatorEndpoints
 
 
         //Debug endpoint
-        app.MapGet("/debug/dbtest", async () =>
-{
-        var cs = builder.Configuration.GetConnectionString("DefaultConnection");
-        try
+        app.MapGet("/debug/dbtest", async (IConfiguration config) =>
         {
-            using var con = new MySqlConnection(cs);
-            await con.OpenAsync();
-            return Results.Ok("DB connection succeeded");
-        }
-        catch (Exception ex)
-        {
-            return Results.Problem($"Failed: {ex.Message}");
-        }
-});
+            var cs = config.GetConnectionString("DefaultConnection") 
+                     ?? "Server=mariadb;Database=mariadatabase;User=secretuser;Password=secretpassword;";
+
+            try
+            {
+                using var con = new MySqlConnection(cs);
+                await con.OpenAsync();
+                return Results.Ok("DB connection succeeded");
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem($"Failed: {ex.Message}");
+            }
+        });
 
     }
 }
