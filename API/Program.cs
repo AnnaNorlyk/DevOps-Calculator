@@ -19,10 +19,10 @@ builder.Services.AddSingleton<SimpleCalculator>();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowIP", policyBuilder =>
+    options.AddPolicy("AllowAll", policy =>
     {
-        policyBuilder
-            .WithOrigins("http://144.24.177.98:3000")
+        policy
+            .AllowAnyOrigin() 
             .AllowAnyMethod()
             .AllowAnyHeader();
     });
@@ -39,7 +39,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors("AllowIP");
+app.UseCors("AllowAll");
 
 app.MapCalculatorEndpoints();
 
