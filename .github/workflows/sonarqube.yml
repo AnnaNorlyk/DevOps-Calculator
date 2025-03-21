@@ -1,4 +1,4 @@
-name: Upload to FTP Server
+name: SonarQube - FTP Server
 
 on:
   push:
