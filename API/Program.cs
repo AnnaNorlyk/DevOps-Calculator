@@ -17,16 +17,12 @@ builder.Services.AddSingleton<CachedCalculator>();
 builder.Services.AddSingleton<SimpleCalculator>();
 
 
-builder.Services.AddCors(options =>
+options.AddPolicy("AllowIP", policyBuilder =>
 {
-    options.AddPolicy("AllowLocal3000",
-        policyBuilder =>
-        {
-            policyBuilder
-                .WithOrigins("http://localhost:3000")
-                .AllowAnyMethod()
-                .AllowAnyHeader();
-        });
+    policyBuilder
+        .WithOrigins("http://144.24.177.98:3000")
+        .AllowAnyMethod()
+        .AllowAnyHeader();
 });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -40,7 +36,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors("AllowLocal3000");
+app.UseCors("AllowIP");
 
 app.MapCalculatorEndpoints();
 
