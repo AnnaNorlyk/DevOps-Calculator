@@ -1,6 +1,6 @@
 namespace Calculator.Services
 {
-    public class CalculationRecord
+    public class CalculationHistory
     {
         public int Id { get; set; }
         public string Operation { get; set; } = null!;
