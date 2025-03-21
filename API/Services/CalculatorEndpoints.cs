@@ -104,5 +104,23 @@ public static class CalculatorEndpoints
             var calculations = history.GetLatestCalculations();
             return Results.Ok(calculations);
         });
+
+
+        //Debug endpoint
+        app.MapGet("/debug/dbtest", async () =>
+{
+        var cs = builder.Configuration.GetConnectionString("DefaultConnection");
+        try
+        {
+            using var con = new MySqlConnection(cs);
+            await con.OpenAsync();
+            return Results.Ok("DB connection succeeded");
+        }
+        catch (Exception ex)
+        {
+            return Results.Problem($"Failed: {ex.Message}");
+        }
+});
+
     }
 }

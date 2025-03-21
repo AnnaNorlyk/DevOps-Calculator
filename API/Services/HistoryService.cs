@@ -15,7 +15,7 @@ namespace Calculator.Services
 
         public void SaveCalculation(
             string operationName,
-            int? operandA,
+            int operandA,
             int? operandB,
             double result)
         {
@@ -28,7 +28,7 @@ namespace Calculator.Services
 
             using var cmd = new MySqlCommand(insertSql, con);
             cmd.Parameters.AddWithValue("@op", operationName);
-            cmd.Parameters.AddWithValue("@a", operandA.HasValue ? operandA : (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@a", operandA);
             cmd.Parameters.AddWithValue("@b", operandB.HasValue ? operandB : (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@res", result);
 
