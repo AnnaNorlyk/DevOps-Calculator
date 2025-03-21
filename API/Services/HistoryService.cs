@@ -27,7 +27,6 @@ namespace Calculator.Services
             con.Open();
 
             using var cmd = new MySqlCommand(insertSql, con);
-
             cmd.Parameters.AddWithValue("@op", operationName);
             cmd.Parameters.AddWithValue("@a", operandA.HasValue ? operandA : (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@b", operandB.HasValue ? operandB : (object)DBNull.Value);
@@ -37,49 +36,48 @@ namespace Calculator.Services
         }
 
         public List<CalculationHistory> GetLatestCalculations()
-{
-    const string selectSql = @"
-        SELECT Id, Operation, OperandA, OperandB, Result, CreatedAt
-        FROM CalculationHistory
-        ORDER BY Id DESC
-        LIMIT 5";
-
-    var calculations = new List<CalculationHistory>();
-
-    using var con = new MySqlConnection(_connectionString);
-    con.Open();
-
-    using var cmd = new MySqlCommand(selectSql, con);
-    using var reader = cmd.ExecuteReader();
-
-    while (reader.Read())
-    {
-        int idOrdinal        = reader.GetOrdinal("Id");
-        int operationOrdinal = reader.GetOrdinal("Operation");
-        int operandAOrdinal  = reader.GetOrdinal("OperandA");
-        int operandBOrdinal  = reader.GetOrdinal("OperandB");
-        int resultOrdinal    = reader.GetOrdinal("Result");
-        int createdAtOrdinal = reader.GetOrdinal("CreatedAt");
-
-        var record = new CalculationHistory
         {
-            Id        = reader.GetInt32(idOrdinal),
-            Operation = reader.GetString(operationOrdinal),
-            OperandA  = reader.IsDBNull(operandAOrdinal) 
-                            ? (int?)null 
-                            : reader.GetInt32(operandAOrdinal),
-            OperandB  = reader.IsDBNull(operandBOrdinal) 
-                            ? (int?)null 
-                            : reader.GetInt32(operandBOrdinal),
-            Result    = reader.GetDouble(resultOrdinal),
-            CreatedAt = reader.GetDateTime(createdAtOrdinal)
-        };
+            const string selectSql = @"
+                SELECT Id, Operation, OperandA, OperandB, Result, CreatedAt
+                FROM CalculationHistory
+                ORDER BY Id DESC
+                LIMIT 5";
 
-        calculations.Add(record);
-    }
+            var calculations = new List<CalculationHistory>();
 
-    return calculations;
-}
+            using var con = new MySqlConnection(_connectionString);
+            con.Open();
 
+            using var cmd = new MySqlCommand(selectSql, con);
+            using var reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                int idOrdinal = reader.GetOrdinal("Id");
+                int operationOrdinal = reader.GetOrdinal("Operation");
+                int operandAOrdinal = reader.GetOrdinal("OperandA");
+                int operandBOrdinal = reader.GetOrdinal("OperandB");
+                int resultOrdinal = reader.GetOrdinal("Result");
+                int createdAtOrdinal = reader.GetOrdinal("CreatedAt");
+
+                var record = new CalculationHistory
+                {
+                    Id = reader.GetInt32(idOrdinal),
+                    Operation = reader.GetString(operationOrdinal),
+                    OperandA = reader.IsDBNull(operandAOrdinal)
+                        ? (int?)null
+                        : reader.GetInt32(operandAOrdinal),
+                    OperandB = reader.IsDBNull(operandBOrdinal)
+                        ? (int?)null
+                        : reader.GetInt32(operandBOrdinal),
+                    Result = reader.GetDouble(resultOrdinal),
+                    CreatedAt = reader.GetDateTime(createdAtOrdinal)
+                };
+
+                calculations.Add(record);
+            }
+
+            return calculations;
+        }
     }
 }
