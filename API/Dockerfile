@@ -25,19 +25,26 @@ COPY API/. API/
 COPY Calculator/. Calculator/
 
 WORKDIR /src/API
-RUN dotnet build "API.csproj" -c $configuration -o /app/build
+
+RUN dotnet build "API.csproj" -c "$configuration" -o /app/build
 
 # Publish stage
 FROM build AS publish
 ARG configuration=Release
-RUN dotnet publish "API.csproj" -c $configuration -r linux-x64 --self-contained=false -o /app/publish /p:UseAppHost=false
 
-# Final runtime 
+RUN dotnet publish \
+    "API.csproj" \
+    -c "$configuration" \
+    -r linux-x64 \
+    --self-contained=false \
+    -o /app/publish \
+    /p:UseAppHost=false
+
+# Final runtime
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-# Set the non-root user again for the final container
 USER appuser
 
 ENTRYPOINT ["dotnet", "API.dll"]
