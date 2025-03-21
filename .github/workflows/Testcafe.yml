@@ -38,7 +38,7 @@ jobs:
 
       - name: Run TestCafe tests
         env:
-          STAGING_REACT_URL: "http://localhost:3000"
+          STAGING_REACT_URL: "http://144.24.177.98:3000"
         run: |
           testcafe 'chromium:headless' E2E/e2eTest.js --reporter spec
 
