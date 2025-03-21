@@ -44,6 +44,22 @@ jobs:
           source: "docker-compose.yml"
           target: "dowa/"
 
+
+      - name: Create .env on staging
+        uses: appleboy/ssh-action@v1.2.1
+        with:
+          host: ${{ vars.STAGING_SERVER_IP }}
+          username: ${{ vars.STAGING_SERVER_USERNAME }}
+          key: ${{ secrets.STAGING_SERVER_SSH_KEY }}
+          script: |
+            cd dowa
+            cat <<EOF > .env
+            MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
+            MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
+            MYSQL_USER=${{ secrets.MYSQL_USER }}
+            MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+            EOF
+
       # Run Docker Compose on staging
       - name: Run Docker Compose on staging server
         uses: appleboy/ssh-action@v0.1.10
