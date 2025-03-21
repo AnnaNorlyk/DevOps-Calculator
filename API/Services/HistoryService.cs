@@ -13,34 +13,46 @@ namespace Calculator.Services
             _connectionString = connectionString;
         }
 
-        public void SaveCalculation(string expression, string result)
+        public void SaveCalculation(
+            string operationName,
+            int? operandA,
+            int? operandB,
+            double result)
         {
             const string insertSql = @"
                 INSERT INTO CalculationHistory (Operation, OperandA, OperandB, Result)
-                VALUES (@operation, 0, NULL, @result)";
-
-            double numericResult = 0;
-            double.TryParse(result, out numericResult);
+                VALUES (@op, @a, @b, @res)";
 
             using var con = new MySqlConnection(_connectionString);
             con.Open();
 
             using var cmd = new MySqlCommand(insertSql, con);
-            cmd.Parameters.AddWithValue("@operation", expression);
-            cmd.Parameters.AddWithValue("@result", numericResult);
+            cmd.Parameters.AddWithValue("@op", operationName);
+            cmd.Parameters.AddWithValue("@a", operandA.HasValue ? operandA : (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@b", operandB.HasValue ? operandB : (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@res", result);
 
             cmd.ExecuteNonQuery();
         }
 
-        public List<string> GetLatestCalculations()
+        public class CalculationRecord
+        {
+            public int Id { get; set; }
+            public string Operation { get; set; }
+            public int? OperandA { get; set; }
+            public int? OperandB { get; set; }
+            public double Result { get; set; }
+            public DateTime CreatedAt { get; set; }
+        }
+        public List<CalculationRecord> GetLatestCalculations()
         {
             const string selectSql = @"
-                SELECT Operation, Result
+                SELECT Id, Operation, OperandA, OperandB, Result, CreatedAt
                 FROM CalculationHistory
                 ORDER BY Id DESC
                 LIMIT 5";
 
-            var calculations = new List<string>();
+            var calculations = new List<CalculationRecord>();
 
             using var con = new MySqlConnection(_connectionString);
             con.Open();
@@ -50,9 +62,16 @@ namespace Calculator.Services
 
             while (reader.Read())
             {
-                var operation = reader.GetString("Operation");
-                var numericResult = reader.GetDouble("Result");
-                calculations.Add($"{operation} = {numericResult}");
+                var record = new CalculationRecord
+                {
+                    Id        = reader.GetInt32("Id"),
+                    Operation = reader.GetString("Operation"),
+                    OperandA  = reader.IsDBNull("OperandA") ? null : reader.GetInt32("OperandA"),
+                    OperandB  = reader.IsDBNull("OperandB") ? null : reader.GetInt32("OperandB"),
+                    Result    = reader.GetDouble("Result"),
+                    CreatedAt = reader.GetDateTime("CreatedAt")
+                };
+                calculations.Add(record);
             }
 
             return calculations;
