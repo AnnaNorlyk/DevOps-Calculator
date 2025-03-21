@@ -17,12 +17,15 @@ builder.Services.AddSingleton<CachedCalculator>();
 builder.Services.AddSingleton<SimpleCalculator>();
 
 
-options.AddPolicy("AllowIP", policyBuilder =>
+builder.Services.AddCors(options =>
 {
-    policyBuilder
-        .WithOrigins("http://144.24.177.98:3000")
-        .AllowAnyMethod()
-        .AllowAnyHeader();
+    options.AddPolicy("AllowIP", policyBuilder =>
+    {
+        policyBuilder
+            .WithOrigins("http://144.24.177.98:3000")
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
 });
 
 builder.Services.AddEndpointsApiExplorer();
