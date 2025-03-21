@@ -9,13 +9,13 @@ jobs:
   delivery:
     runs-on: ubuntu-latest
     steps:
-      # 1. Check out all commits and tags (fetch-depth: 0)
+      # Check out all commits and tags 
       - name: Check out repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # 2. Bump version according to commit history (or each commit)
+      # Bump version according to commit history 
       - name: Determine Semantic Version
         id: semver_app
         uses: paulhatch/semantic-version@v5.4.0
@@ -23,7 +23,7 @@ jobs:
           bump_each_commit: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      # 3. Push new tag so subsequent runs see the updated version
+      # Push new tag so subsequent runs see the updated version
       - name: Push updated tag
         run: |
           git config user.name "github-actions"
@@ -31,7 +31,7 @@ jobs:
           git tag "v${{ steps.semver_app.outputs.version }}"
           git push origin "v${{ steps.semver_app.outputs.version }}"
 
-      # 4. Log in to GitHub Container Registry (GHCR)
+      # Log in to GitHub Container Registry (GHCR)
       - name: Log in to GHCR
         uses: docker/login-action@v2
         with:
@@ -39,12 +39,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.CR_PAT }}
 
-      # 5. Convert repository name to lowercase (helpful if you have uppercase letters in org/user/repo name)
+      # Convert repository name to lowercase 
       - name: Convert Repository Name to Lowercase
         id: repo_name
         run: echo "REPO_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
-      # 6. Build and push Docker images to GHCR
+      # Build and push Docker images to GHCR
       - name: Build and Push Docker image
         run: |
           docker build \
@@ -55,7 +55,7 @@ jobs:
           docker push ghcr.io/${{ env.REPO_NAME }}/calculator-api:staging
           docker push ghcr.io/${{ env.REPO_NAME }}/calculator-api:${{ steps.semver_app.outputs.version }}
 
-      # 7. Create or update a release with generated notes
+      # Create or update a release with generated notes
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
