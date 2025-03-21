@@ -34,8 +34,6 @@ namespace Calculator.Services
             cmd.Parameters.AddWithValue("@res", result);
 
             cmd.ExecuteNonQuery();
-
-            cmd.ExecuteNonQuery();
         }
 
         public List<CalculationHistory> GetLatestCalculations()
