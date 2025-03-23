@@ -35,7 +35,7 @@ const CalculatorForm: React.FC<CalculatorFormProps> = ({
           <option value="multiply">Multiply</option>
           <option value="divide">Divide</option>
           <option value="factorial">Factorial</option>
-          <option value="isprime">Is Prime</option>
+          <option value="prime">Is Prime</option>
         </select>
       </div>
 
