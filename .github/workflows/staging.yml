@@ -45,6 +45,16 @@ jobs:
           target: "dowa/"
 
 
+      - name: Deliver migrations to staging
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ vars.STAGING_SERVER_IP }}
+          username: ${{ vars.STAGING_SERVER_USERNAME }}
+          key: ${{ secrets.STAGING_SERVER_SSH_KEY }}
+          source: "db/migrations/*"
+          target: "dowa/db/migrations/"
+
+
       - name: Create .env on staging
         uses: appleboy/ssh-action@v1.2.1
         with:
