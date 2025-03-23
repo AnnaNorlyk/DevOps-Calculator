@@ -11,22 +11,20 @@ const HistoryTable: React.FC<{ history: IHistoryRecord[] }> = ({ history }) => {
         <thead>
           <tr>
             <th>ID</th>
-            <th>Operator</th>
             <th>First number</th>
+            <th>Operator</th>
             <th>Second number</th>
             <th>Result</th>
-            <th>Timestamp</th>
           </tr>
         </thead>
         <tbody>
           {history.map((record) => (
             <tr key={record.id}>
               <td>{record.id}</td>
-              <td>{record.operation}</td>
               <td>{record.operandA ?? "-"}</td>
+              <td>{record.operation}</td>
               <td>{record.operandB ?? "-"}</td>
               <td>{record.result}</td>
-              <td>{record.created_at}</td>
             </tr>
           ))}
         </tbody>
@@ -36,4 +34,3 @@ const HistoryTable: React.FC<{ history: IHistoryRecord[] }> = ({ history }) => {
 };
 
 export default HistoryTable;
-
