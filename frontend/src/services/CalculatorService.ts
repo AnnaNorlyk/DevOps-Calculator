@@ -30,8 +30,9 @@ export async function doCalculation(
 
   // If the operation is prime, the API returns true/false.
   if (operation === "prime") {
-    return data ? "Yes" : "No";
+    return data ? "true" : "false"; // or use data.toString()
   }
+  
 
   return String(data);
 }
