@@ -49,10 +49,9 @@ public static class CalculatorEndpoints
         app.MapGet("api/simple/prime", (int a, SimpleCalculator calc, HistoryService history) =>
         {
             var isPrime = calc.IsPrime(a);
-            double numericResult = isPrime ? 1 : 0;
-            history.SaveCalculation("IsPrime", a, null, numericResult);
+           string primeString = isPrime.ToString().ToLowerInvariant();  
+            history.SaveCalculation("IsPrime", a, null, primeString);
             return Results.Ok(isPrime);
-        });
 
         // ===================== CACHED ============================
         app.MapGet("api/cached/add", (int a, int b, CachedCalculator calc, HistoryService history) =>
