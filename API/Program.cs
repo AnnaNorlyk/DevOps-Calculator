@@ -16,7 +16,6 @@ var dbPassword = Environment.GetEnvironmentVariable("MYSQL_PASSWORD");
 
 var connString = $"Server={dbHost};Database={dbName};User={dbUser};Password={dbPassword};";
 
-builder.Services.AddSingleton<HistoryService>(); 
 builder.Services.AddSingleton(new HistoryService(connString)); 
 
 
