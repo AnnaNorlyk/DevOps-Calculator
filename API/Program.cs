@@ -16,9 +16,6 @@ var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
 
 var connString = $"Server={dbHost};Database={dbName};User={dbUser};Password={dbPassword};";
 
-builder.Services.AddSingleton(new HistoryService(connString)); 
-
-
 builder.Services.AddSingleton(new HistoryService(connString));
 builder.Services.AddSingleton<CachedCalculator>();
 builder.Services.AddSingleton<SimpleCalculator>();
