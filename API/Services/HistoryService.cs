@@ -13,27 +13,32 @@ namespace Calculator.Services
             _connectionString = connectionString;
         }
 
-        public void SaveCalculation(
-            string operationName,
-            int operandA,
-            int? operandB,
-            double result)
-        {
-            const string insertSql = @"
-                INSERT INTO CalculationHistory (Operation, OperandA, OperandB, Result)
-                VALUES (@op, @a, @b, @res)";
+        public void SaveCalculation(string operationName, int operandA, int? operandB, double result)
+{
+    const string insertSql = @"
+        INSERT INTO CalculationHistory (Operation, OperandA, OperandB, Result)
+        VALUES (@op, @a, @b, @res)";
 
-            using var con = new MySqlConnection(_connectionString);
-            con.Open();
+    try
+    {
+        using var con = new MySqlConnection(_connectionString);
+        con.Open();
 
-            using var cmd = new MySqlCommand(insertSql, con);
-            cmd.Parameters.AddWithValue("@op", operationName);
-            cmd.Parameters.AddWithValue("@a", operandA);
-            cmd.Parameters.AddWithValue("@b", operandB.HasValue ? operandB : (object)DBNull.Value);
-            cmd.Parameters.AddWithValue("@res", result);
+        using var cmd = new MySqlCommand(insertSql, con);
+        cmd.Parameters.AddWithValue("@op", operationName);
+        cmd.Parameters.AddWithValue("@a", operandA);
+        cmd.Parameters.AddWithValue("@b", operandB.HasValue ? operandB : (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@res", result);
 
-            cmd.ExecuteNonQuery();
-        }
+        cmd.ExecuteNonQuery();
+    }
+    catch (Exception ex)
+    {
+      
+        Console.WriteLine($"[HistoryService] SaveCalculation error: {ex.Message}");
+        throw; 
+    }
+}
 
         public List<CalculationHistory> GetLatestCalculations()
         {
