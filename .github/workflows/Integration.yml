@@ -1,4 +1,4 @@
-name: Unit Tests & Mutation Tests
+name: Integration and analysis
 
 on:
   push:
@@ -8,14 +8,15 @@ on:
 jobs:
   integration:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  
+          fetch-depth: 0
+
       - name: Install tools
         run: |
+          dotnet tool install -g dotnet-sonarscanner
           dotnet tool install -g dotnet-reportgenerator-globaltool
           dotnet tool install -g dotnet-stryker
 
@@ -36,22 +37,45 @@ jobs:
           MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
 
       - name: Wait for DB
-      # Wait a few seconds for MariaDB to initialize
-        run: sleep 10  
+        run: sleep 10
+
+      - name: Sonar Begin
+        run: |
+          dotnet sonarscanner begin \
+            /k:"${{ vars.SONAR_PROJECT_KEY }}" \
+            /d:sonar.host.url="${{ vars.SONAR_HOST }}" \
+            /d:sonar.token="${{ vars.SONAR_TOKEN }}" \
+            /d:sonar.qualitygate.wait=true \
+            /d:sonar.qualitygate.timeout=300 \
+            /d:sonar.coverageReportPaths="coverage-report/SonarQube.xml"
+
+      - name: Build
+        run: dotnet build --no-restore
 
       - name: Run Unit Tests
-        run: |
-          dotnet test --collect:"XPlat Code Coverage" --results-directory TestResults
+        run: dotnet test --collect:"XPlat Code Coverage" --results-directory TestResults
 
-      - name: Generate Coverage Report
+      - name: Generate Coverage Report (HTML)
         run: |
           reportgenerator \
             -reports:"TestResults/**/coverage.cobertura.xml" \
-            -targetdir:coverage-report \
-            -reporttypes:Html
+            -targetdir:"coverage-report" \
+            -reporttypes:"Html"
+
+      - name: Generate Coverage Report (SonarQube)
+        run: |
+          reportgenerator \
+            -reports:"TestResults/**/coverage.cobertura.xml" \
+            -targetdir:"coverage-report" \
+            -reporttypes:"SonarQube"
 
       - name: Run Mutation Tests
         run: dotnet stryker --break-at 80
+
+      - name: Sonar End
+        run: |
+          dotnet sonarscanner end \
+            /d:sonar.token="${{ vars.SONAR_TOKEN }}"
 
       - name: Upload Coverage
         if: always()
@@ -66,4 +90,3 @@ jobs:
         with:
           name: StrykerReport
           path: StrykerOutput
-

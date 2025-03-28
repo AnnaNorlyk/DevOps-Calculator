@@ -1,9 +1,10 @@
 name: E2E-Testcafe
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["Build and Deploy to Staging"]
+    types:
+      - completed
 
 jobs:
   e2e-tests:
