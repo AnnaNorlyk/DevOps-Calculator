@@ -9,7 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddEnvironmentVariables();  
 
-var dbHost     = Environment.GetEnvironmentVariable("MYSQL_HOST");
+
+var dbHost     = Environment.GetEnvironmentVariable("DB_HOST");
 var dbName     = Environment.GetEnvironmentVariable("MYSQL_DATABASE");
 var dbUser     = Environment.GetEnvironmentVariable("MYSQL_USER");
 var dbPassword = Environment.GetEnvironmentVariable("MYSQL_PASSWORD");
