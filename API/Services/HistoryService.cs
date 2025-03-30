@@ -5,85 +5,56 @@ using System.Collections.Generic;
 namespace Calculator.Services
 {
     public class HistoryService
-    {
-        private readonly IDatabaseClient _db;
-        private readonly string _connectionString;
-
-        public HistoryService(IDatabaseClient db)
-        {
-            _db = db;
-        }
-
-        public void SaveCalculation(string operationName, int operandA, int? operandB, double result)
 {
-    const string insertSql = @"
-        INSERT INTO CalculationHistory (Operation, OperandA, OperandB, Result)
-        VALUES (@op, @a, @b, @res)";
+    private readonly IDatabaseClient _db;
 
-    try
+    public HistoryService(IDatabaseClient db)
     {
-        using var con = new MySqlConnection(_connectionString);
-        con.Open();
-
-        using var cmd = new MySqlCommand(insertSql, con);
-        cmd.Parameters.AddWithValue("@op", operationName);
-        cmd.Parameters.AddWithValue("@a", operandA);
-        cmd.Parameters.AddWithValue("@b", operandB.HasValue ? operandB : (object)DBNull.Value);
-        cmd.Parameters.AddWithValue("@res", result);
-
-        cmd.ExecuteNonQuery();
+        _db = db;
     }
-    catch (Exception ex)
+
+    public void SaveCalculation(string operationName, int operandA, int? operandB, double result)
     {
-      
-        Console.WriteLine($"[HistoryService] SaveCalculation error: {ex.Message}");
-        throw; 
-    }
-}
+        const string insertSql = @"
+            INSERT INTO CalculationHistory (Operation, OperandA, OperandB, Result)
+            VALUES (@op, @a, @b, @res)";
 
-        public List<CalculationHistory> GetLatestCalculations()
+        var parameters = new Dictionary<string, object>
         {
-            const string selectSql = @"
-                SELECT Id, Operation, OperandA, OperandB, Result, CreatedAt
-                FROM CalculationHistory
-                ORDER BY Id DESC
-                LIMIT 5";
+            ["@op"] = operationName,
+            ["@a"] = operandA,
+            ["@b"] = operandB ?? (object)DBNull.Value,
+            ["@res"] = result
+        };
 
-            var calculations = new List<CalculationHistory>();
+        _db.ExecuteNonQuery(insertSql, parameters);
+    }
 
-            using var con = new MySqlConnection(_connectionString);
-            con.Open();
+    public List<CalculationHistory> GetLatestCalculations()
+    {
+        const string selectSql = @"
+            SELECT Id, Operation, OperandA, OperandB, Result, CreatedAt
+            FROM CalculationHistory
+            ORDER BY Id DESC
+            LIMIT 5";
 
-            using var cmd = new MySqlCommand(selectSql, con);
-            using var reader = cmd.ExecuteReader();
+        var rows = _db.ExecuteReader(selectSql, new Dictionary<string, object>());
+        var calculations = new List<CalculationHistory>();
 
-            while (reader.Read())
+        foreach (var row in rows)
+        {
+            var record = new CalculationHistory
             {
-                int idOrdinal = reader.GetOrdinal("Id");
-                int operationOrdinal = reader.GetOrdinal("Operation");
-                int operandAOrdinal = reader.GetOrdinal("OperandA");
-                int operandBOrdinal = reader.GetOrdinal("OperandB");
-                int resultOrdinal = reader.GetOrdinal("Result");
-                int createdAtOrdinal = reader.GetOrdinal("CreatedAt");
-
-                var record = new CalculationHistory
-                {
-                    Id = reader.GetInt32(idOrdinal),
-                    Operation = reader.GetString(operationOrdinal),
-                    OperandA = reader.IsDBNull(operandAOrdinal)
-                        ? (int?)null
-                        : reader.GetInt32(operandAOrdinal),
-                    OperandB = reader.IsDBNull(operandBOrdinal)
-                        ? (int?)null
-                        : reader.GetInt32(operandBOrdinal),
-                    Result = reader.GetDouble(resultOrdinal),
-                    CreatedAt = reader.GetDateTime(createdAtOrdinal)
-                };
-
-                calculations.Add(record);
-            }
-
-            return calculations;
+                Id        = Convert.ToInt32(row["Id"]),
+                Operation = row["Operation"].ToString(),
+                OperandA  = row["OperandA"] is DBNull ? null : (int?)Convert.ToInt32(row["OperandA"]),
+                OperandB  = row["OperandB"] is DBNull ? null : (int?)Convert.ToInt32(row["OperandB"]),
+                Result    = Convert.ToDouble(row["Result"]),
+                CreatedAt = Convert.ToDateTime(row["CreatedAt"])
+            };
+            calculations.Add(record);
         }
+        return calculations;
+        }   
     }
 }
