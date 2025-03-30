@@ -72,9 +72,10 @@ jobs:
 
       - name: Run Mutation Tests
         run: |
+          #Excluding since E2E tests the full flow from db, api and frontend
           dotnet stryker \
             --mutate "**/*.cs" \
-            --mutate "!**/MySqlDatabaseClient.cs" \ #Excluding since E2E tests the full flow from db, api and frontend
+            --mutate "!**/MySqlDatabaseClient.cs" \ 
             --break-at 80
         
 
