@@ -254,5 +254,71 @@ public class CachedCalculatorTest
         Assert.That(result, Is.EqualTo(7)); 
     }
 
+[Test]
+    public void Subtract_CachesResult()
+    {
+        var calc = new CachedCalculator();
+        calc.Subtract(10, 3);
+        Assert.That(calc.Cache.Count, Is.EqualTo(1));
+    }
 
+    [Test]
+    public void Subtract_ReturnsCachedValue()
+    {
+        var calc = new CachedCalculator();
+        calc.Subtract(10, 3);
+        var result = calc.Subtract(10, 3);
+        Assert.That(result, Is.EqualTo(7));
+    }
+
+    [Test]
+    public void Multiply_CachesResult()
+    {
+        var calc = new CachedCalculator();
+        calc.Multiply(4, 3);
+        Assert.That(calc.Cache.Count, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void Multiply_ReturnsCachedValue()
+    {
+        var calc = new CachedCalculator();
+        calc.Multiply(4, 3);
+        var result = calc.Multiply(4, 3);
+        Assert.That(result, Is.EqualTo(12));
+    }
+
+    [Test]
+    public void Divide_CachesResult()
+    {
+        var calc = new CachedCalculator();
+        calc.Divide(10, 2);
+        Assert.That(calc.Cache.Count, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void Divide_ReturnsCachedValue()
+    {
+        var calc = new CachedCalculator();
+        calc.Divide(10, 2);
+        var result = calc.Divide(10, 2);
+        Assert.That(result, Is.EqualTo(5));
+    }
+
+    [Test]
+    public void Factorial_CachesResult()
+    {
+        var calc = new CachedCalculator();
+        calc.Factorial(5);
+        Assert.That(calc.Cache.Count, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void Factorial_ReturnsCachedValue()
+    {
+        var calc = new CachedCalculator();
+        calc.Factorial(5);
+        var result = calc.Factorial(5);
+        Assert.That(result, Is.EqualTo(120));
+    }
 }

@@ -1,91 +1,143 @@
-﻿using NUnit.Framework;
-using Moq;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Calculator.Services;
+using Moq;
+using NUnit.Framework;
 
-namespace IntegrationTest
+namespace Calculator.Services.Tests
 {
     [TestFixture]
     public class HistoryServiceTests
     {
         [Test]
-        public void SaveCalculation_CallsExecuteNonQuery()
+        public void SaveCalc_NonNullB()
         {
-            // Arrange
+            // SaveCalculation with non-null operandB
             var mockDb = new Mock<IDatabaseClient>();
-            var service = new HistoryService(mockDb.Object);
+            var svc = new HistoryService(mockDb.Object);
 
-            // Act
-            service.SaveCalculation("Add", 5, 3, 8.0);
+            svc.SaveCalculation("Add", 5, 3, 8);
 
-            // Assert
-            mockDb.Verify(
-                db => db.ExecuteNonQuery(
-                    It.Is<string>(sql => sql.Contains("INSERT INTO CalculationHistory")),
-                    It.IsAny<Dictionary<string, object>>()
-                ),
-                Times.Once
-            );
+            mockDb.Verify(db => db.ExecuteNonQuery(
+                It.Is<string>(sql => sql.Contains("INSERT INTO CalculationHistory")),
+                It.Is<Dictionary<string, object>>(prms =>
+                     prms["@op"].Equals("Add") &&
+                     prms["@a"].Equals(5) &&
+                     prms["@b"].Equals(3) &&
+                     prms["@res"].Equals(8.0)
+                )
+            ), Times.Once);
         }
 
         [Test]
-        public void GetLatestCalculations_Returns_ProperData()
+        public void SaveCalc_NullB()
         {
-            // Arrange
+            // SaveCalculation with null operandB
             var mockDb = new Mock<IDatabaseClient>();
+            var svc = new HistoryService(mockDb.Object);
 
-            // Fake two rows from the DB
-            var fakeRows = new List<Dictionary<string, object>>
+            svc.SaveCalculation("Divide", 10, null, 5.0);
+
+            mockDb.Verify(db => db.ExecuteNonQuery(
+                It.IsAny<string>(),
+                It.Is<Dictionary<string, object>>(prms =>
+                     prms["@op"].Equals("Divide") &&
+                     prms["@a"].Equals(10) &&
+                     prms["@b"] == DBNull.Value &&
+                     prms["@res"].Equals(5.0)
+                )
+            ), Times.Once);
+        }
+
+        [Test]
+        public void GetCalc_NullB()
+        {
+            var mockDb = new Mock<IDatabaseClient>();
+            var rows = new List<Dictionary<string, object>>
             {
-                new Dictionary<string, object> {
+                new Dictionary<string, object>
+                {
                     ["Id"] = 101,
-                    ["Operation"] = "Add",
-                    ["OperandA"] = 5,
-                    ["OperandB"] = 3,
-                    ["Result"]   = 8.0,
-                    ["CreatedAt"] = new DateTime(2023,1,1)
-                },
-                new Dictionary<string, object> {
-                    ["Id"] = 102,
                     ["Operation"] = "Factorial",
                     ["OperandA"] = 5,
                     ["OperandB"] = DBNull.Value,
-                    ["Result"]   = 120.0,
-                    ["CreatedAt"] = new DateTime(2023,1,2)
+                    ["Result"] = 120.0,
+                    ["CreatedAt"] = new DateTime(2024,1,1)
                 }
             };
+            mockDb.Setup(db => db.ExecuteReader(It.IsAny<string>(), It.IsAny<Dictionary<string, object>>()))
+                  .Returns(rows);
 
-            mockDb
-                .Setup(db => db.ExecuteReader(
-                    It.Is<string>(sql => sql.Contains("SELECT Id, Operation")),
-                    It.IsAny<Dictionary<string, object>>()
-                ))
-                .Returns(fakeRows);
+            var svc = new HistoryService(mockDb.Object);
+            var results = svc.GetLatestCalculations();
 
-            var service = new HistoryService(mockDb.Object);
+            Assert.That(results.Count, Is.EqualTo(1));
+            Assert.That(results[0].Id, Is.EqualTo(101));
+            Assert.That(results[0].OperandB, Is.Null);
+        }
 
-            // Act
-            var calculations = service.GetLatestCalculations();
+        [Test]
+        public void GetCalc_NonNullB()
+        {
+            // GetLatestCalculations with a normal integer for operandB
+            var mockDb = new Mock<IDatabaseClient>();
+            var rows = new List<Dictionary<string, object>>
+            {
+                new Dictionary<string, object>
+                {
+                    ["Id"] = 102,
+                    ["Operation"] = "Add",
+                    ["OperandA"] = 2,
+                    ["OperandB"] = 3,
+                    ["Result"] = 5.0,
+                    ["CreatedAt"] = new DateTime(2024,2,2)
+                }
+            };
+            mockDb.Setup(db => db.ExecuteReader(It.IsAny<string>(), It.IsAny<Dictionary<string, object>>()))
+                  .Returns(rows);
 
-            // Assert
-            Assert.That(calculations.Count, Is.EqualTo(2));
-            var first = calculations.First();
-            Assert.That(first.Id, Is.EqualTo(101));
-            Assert.That(first.Operation, Is.EqualTo("Add"));
-            Assert.That(first.OperandA, Is.EqualTo(5));
-            Assert.That(first.OperandB, Is.EqualTo(3));
-            Assert.That(first.Result, Is.EqualTo(8.0));
-            Assert.That(first.CreatedAt, Is.EqualTo(new DateTime(2023,1,1)));
+            var svc = new HistoryService(mockDb.Object);
+            var results = svc.GetLatestCalculations();
 
-            var second = calculations.Last();
-            Assert.That(second.Id, Is.EqualTo(102));
-            Assert.That(second.Operation, Is.EqualTo("Factorial"));
-            Assert.That(second.OperandA, Is.EqualTo(5));
-            Assert.That(second.OperandB, Is.Null);
-            Assert.That(second.Result, Is.EqualTo(120.0));
-            Assert.That(second.CreatedAt, Is.EqualTo(new DateTime(2023,1,2)));
+            Assert.That(results.Count, Is.EqualTo(1));
+            Assert.That(results[0].Id, Is.EqualTo(102));
+            Assert.That(results[0].OperandB, Is.EqualTo(3));
+        }
+
+        [Test]
+        public void GetCalc_MultipleRows()
+        {
+            // GetLatestCalculations with multiple rows
+            var mockDb = new Mock<IDatabaseClient>();
+            var rows = new List<Dictionary<string, object>>
+            {
+                new Dictionary<string, object>
+                {
+                    ["Id"] = 200,
+                    ["Operation"] = "Subtract",
+                    ["OperandA"] = 10,
+                    ["OperandB"] = 5,
+                    ["Result"] = 5.0,
+                    ["CreatedAt"] = new DateTime(2024,3,3)
+                },
+                new Dictionary<string, object>
+                {
+                    ["Id"] = 201,
+                    ["Operation"] = "Add",
+                    ["OperandA"] = 6,
+                    ["OperandB"] = 4,
+                    ["Result"] = 10.0,
+                    ["CreatedAt"] = new DateTime(2024,3,4)
+                }
+            };
+            mockDb.Setup(db => db.ExecuteReader(It.IsAny<string>(), It.IsAny<Dictionary<string, object>>()))
+                  .Returns(rows);
+
+            var svc = new HistoryService(mockDb.Object);
+            var results = svc.GetLatestCalculations();
+
+            Assert.That(results.Count, Is.EqualTo(2));
+            Assert.That(results[0].Id, Is.EqualTo(200));
+            Assert.That(results[1].Id, Is.EqualTo(201));
         }
     }
 }
