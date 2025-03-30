@@ -71,7 +71,12 @@ jobs:
             -reporttypes:"SonarQube"
 
       - name: Run Mutation Tests
-        run: dotnet stryker --break-at 80
+        run: |
+          dotnet stryker \
+            --mutate "**/*.cs" \
+            --mutate "!**/MySqlDatabaseClient.cs" \ #Excluding since E2E tests the full flow from db, api and frontend
+            --break-at 80
+        
 
       - name: Sonar End
         run: |

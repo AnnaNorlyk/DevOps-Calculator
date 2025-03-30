@@ -42,13 +42,10 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddHttpLogging(logging =>
-{
-    logging.LoggingFields = HttpLoggingFields.All;
-});
+
 
 var app = builder.Build();
-app.UseHttpLogging();
+
 
 if (app.Environment.IsDevelopment())
 {
