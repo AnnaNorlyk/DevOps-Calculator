@@ -2,6 +2,7 @@ using Calculator;
 using Calculator.Services;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.HttpLogging;
+using Calculator.API.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);

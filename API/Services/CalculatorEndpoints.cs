@@ -3,6 +3,7 @@ using Calculator.Services;
 using Microsoft.AspNetCore.Builder;
 using MySql.Data.MySqlClient;
 
+namespace Calculator.API.Services;
 
 public static class CalculatorEndpoints
 {

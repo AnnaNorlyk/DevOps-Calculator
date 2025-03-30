@@ -48,6 +48,7 @@ jobs:
             /d:sonar.qualitygate.wait=true \
             /d:sonar.qualitygate.timeout=300 \
             /d:sonar.coverageReportPaths="coverage-report/SonarQube.xml"
+            /d:sonar.scanner.scanAll=false  
 
       - name: Build
         run: dotnet build
