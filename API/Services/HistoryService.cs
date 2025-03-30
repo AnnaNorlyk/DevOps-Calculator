@@ -6,11 +6,12 @@ namespace Calculator.Services
 {
     public class HistoryService
     {
+        private readonly IDatabaseClient _db;
         private readonly string _connectionString;
 
-        public HistoryService(string connectionString)
+        public HistoryService(IDatabaseClient db)
         {
-            _connectionString = connectionString;
+            _db = db;
         }
 
         public void SaveCalculation(string operationName, int operandA, int? operandB, double result)

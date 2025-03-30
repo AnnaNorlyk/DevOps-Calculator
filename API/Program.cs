@@ -19,7 +19,11 @@ var dbPassword = Environment.GetEnvironmentVariable("MYSQL_PASSWORD");
 
 var connString = $"Server={dbHost};Database={dbName};User={dbUser};Password={dbPassword};";
 
-builder.Services.AddSingleton(new HistoryService(connString));
+builder.Services.AddSingleton<IDatabaseClient>(
+    _ => new MySqlDatabaseClient(connString)
+);
+
+builder.Services.AddSingleton<HistoryService>();
 builder.Services.AddSingleton<CachedCalculator>();
 builder.Services.AddSingleton<SimpleCalculator>();
 
