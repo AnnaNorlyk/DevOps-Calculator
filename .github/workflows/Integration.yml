@@ -72,11 +72,16 @@ jobs:
 
       - name: Run Mutation Tests
         run: |
-          #Excluding since E2E tests the full flow from db, api and frontend
+          # Excluding MySqlDatabaseClient.cs, Program.cs, and CalculatorEndpoints.cs 
+          # because they're infrastructure/startup files or simple endpoint wiring. 
+          # The real business logic is already tested via unit tests and E2E coverage.
           dotnet stryker \
             --mutate "**/*.cs" \
             --mutate "!**/MySqlDatabaseClient.cs" \
+            --mutate "!**/Program.cs" \
+            --mutate "!**/CalculatorEndpoints.cs" \
             --break-at 80
+          
           
         
 
