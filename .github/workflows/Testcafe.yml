@@ -55,7 +55,7 @@ jobs:
       - name: Run K6 Spike Test
         uses: grafana/run-k6-action@v1
         with:
-          path: "load-tests/spike-test.js"
+          path: "frontend/K6Test/SpikeTest.js"
       
         
         
