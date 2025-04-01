@@ -51,6 +51,7 @@ namespace Calculator.Services.Tests
         [Test]
         public void GetCalc_NullB()
         {
+            //Arrange
             var mockDb = new Mock<IDatabaseClient>();
             var rows = new List<Dictionary<string, object>>
             {
@@ -70,9 +71,13 @@ namespace Calculator.Services.Tests
             var svc = new HistoryService(mockDb.Object);
             var results = svc.GetLatestCalculations();
 
-            Assert.That(results.Count, Is.EqualTo(1));
-            Assert.That(results[0].Id, Is.EqualTo(101));
-            Assert.That(results[0].OperandB, Is.Null);
+            Assert.Multiple(() =>
+            {
+                Assert.That(results, Has.Count.EqualTo(1));
+                Assert.That(results[0].Id, Is.EqualTo(101));
+                Assert.That(results[0].OperandB, Is.Null);
+            });
+
         }
 
         [Test]
@@ -98,9 +103,13 @@ namespace Calculator.Services.Tests
             var svc = new HistoryService(mockDb.Object);
             var results = svc.GetLatestCalculations();
 
-            Assert.That(results.Count, Is.EqualTo(1));
-            Assert.That(results[0].Id, Is.EqualTo(102));
-            Assert.That(results[0].OperandB, Is.EqualTo(3));
+            Assert.Multiple(() =>
+            {
+                
+                Assert.That(results, Has.Count.EqualTo(1));
+                Assert.That(results[0].Id, Is.EqualTo(102));
+                Assert.That(results[0].OperandB, Is.EqualTo(3));
+            });
         }
 
         [Test]
@@ -135,9 +144,12 @@ namespace Calculator.Services.Tests
             var svc = new HistoryService(mockDb.Object);
             var results = svc.GetLatestCalculations();
 
-            Assert.That(results.Count, Is.EqualTo(2));
-            Assert.That(results[0].Id, Is.EqualTo(200));
-            Assert.That(results[1].Id, Is.EqualTo(201));
+             Assert.Multiple(() =>
+    {
+                Assert.That(results, Has.Count.EqualTo(2)); 
+                Assert.That(results[0].Id, Is.EqualTo(200)); 
+                Assert.That(results[1].Id, Is.EqualTo(201));
+            });
         }
     }
 }

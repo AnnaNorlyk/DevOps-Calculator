@@ -259,7 +259,7 @@ public class CachedCalculatorTest
     {
         var calc = new CachedCalculator();
         calc.Subtract(10, 3);
-        Assert.That(calc.Cache.Count, Is.EqualTo(1));
+        Assert.That(calc.Cache, Has.Count.EqualTo(1));
     }
 
     [Test]
@@ -276,7 +276,7 @@ public class CachedCalculatorTest
     {
         var calc = new CachedCalculator();
         calc.Multiply(4, 3);
-        Assert.That(calc.Cache.Count, Is.EqualTo(1));
+        Assert.That(calc.Cache, Has.Count.EqualTo(1));
     }
 
     [Test]
@@ -293,7 +293,7 @@ public class CachedCalculatorTest
     {
         var calc = new CachedCalculator();
         calc.Divide(10, 2);
-        Assert.That(calc.Cache.Count, Is.EqualTo(1));
+        Assert.That(calc.Cache, Has.Count.EqualTo(1));
     }
 
     [Test]
@@ -310,7 +310,7 @@ public class CachedCalculatorTest
     {
         var calc = new CachedCalculator();
         calc.Factorial(5);
-        Assert.That(calc.Cache.Count, Is.EqualTo(1));
+        Assert.That(calc.Cache, Has.Count.EqualTo(1));
     }
 
     [Test]

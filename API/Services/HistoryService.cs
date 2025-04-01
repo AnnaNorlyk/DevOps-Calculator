@@ -42,18 +42,19 @@ namespace Calculator.Services
         var calculations = new List<CalculationHistory>();
 
         foreach (var row in rows)
-        {
-            var record = new CalculationHistory
-            {
-                Id        = Convert.ToInt32(row["Id"]),
-                Operation = row["Operation"].ToString(),
-                OperandA  = row["OperandA"] is DBNull ? null : (int?)Convert.ToInt32(row["OperandA"]),
-                OperandB  = row["OperandB"] is DBNull ? null : (int?)Convert.ToInt32(row["OperandB"]),
-                Result    = Convert.ToDouble(row["Result"]),
-                CreatedAt = Convert.ToDateTime(row["CreatedAt"])
-            };
-            calculations.Add(record);
-        }
+{
+    var record = new CalculationHistory
+    {
+        Id        = Convert.ToInt32(row["Id"]),
+        Operation = Convert.ToString(row["Operation"]) ?? "Unknown",
+        OperandA  = row["OperandA"] is DBNull ? null : (int?)Convert.ToInt32(row["OperandA"]),
+        OperandB  = row["OperandB"] is DBNull ? null : (int?)Convert.ToInt32(row["OperandB"]),
+        Result    = Convert.ToDouble(row["Result"]),
+        CreatedAt = Convert.ToDateTime(row["CreatedAt"])
+    };
+    calculations.Add(record);
+}
+
         return calculations;
         }   
     }
