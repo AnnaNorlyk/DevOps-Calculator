@@ -1,4 +1,4 @@
-name: E2E-Testcafe
+name: E2E-Testcafe and K6
 
 on:
   workflow_run:
@@ -48,3 +48,9 @@ jobs:
         with:
           name: TestCafeReport
           path: testcafe-result.json
+
+      - name: Run K6 Spike Test
+        uses: grafana/run-k6-action@v1
+        with:
+          path: "IntegrationTest/K6Test/SpikeTest.js"
+

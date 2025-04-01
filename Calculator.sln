@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "API\API.csproj", "{9D7E6A8B-9CE4-4E18-BFBF-1F81C3162A0B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTest", "IntegrationTest\IntegrationTest.csproj", "{944B2230-B2A3-4ABE-B693-11E7EA8115DF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OtherTests", "IntegrationTest\OtherTests.csproj", "{944B2230-B2A3-4ABE-B693-11E7EA8115DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
