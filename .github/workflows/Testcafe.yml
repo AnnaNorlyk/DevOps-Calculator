@@ -49,8 +49,15 @@ jobs:
           name: TestCafeReport
           path: testcafe-result.json
 
+      - name: Setup k6
+        uses: grafana/setup-k6-action@v1
+      
       - name: Run K6 Spike Test
         uses: grafana/run-k6-action@v1
         with:
-          path: "frontend/K6Test/SpikeTest.js"
+          path: "load-tests/spike-test.js"
+      
+        
+        
+        
 
