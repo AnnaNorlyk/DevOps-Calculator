@@ -1,1 +1,1 @@
-Refactored and remade.
+[![Quality Gate Status](http://62.164.217.208:9000/api/project_badges/measure?project=DevOpsProject&metric=alert_status&token=sqb_3fec9b03765d4b93f0b71acd58c69a938514d82c)](http://62.164.217.208:9000/dashboard?id=DevOpsProject)
