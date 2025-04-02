@@ -1,4 +1,5 @@
-**Calculator Project**
+**Calculator Project**\
+**Link to staging server:** http://141.147.1.249:3000/
 
 **Requirements:**
 - Automatic integration and delivery pipeline must be implemented with GitHub Actions. :white_check_mark:
