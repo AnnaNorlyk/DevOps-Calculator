@@ -1,4 +1,4 @@
-**Calculator Project**
+**Calculator Project**\
 **Link to staging server:** http://141.147.1.249:3000/
 
 **Requirements:**
