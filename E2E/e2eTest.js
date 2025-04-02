@@ -1,7 +1,7 @@
 import { Selector } from "testcafe";
 
-fixture("Calculator E2E tests (AAA)")
-    .page("http://144.24.177.98:3000");
+fixture("Calculator E2E tests")
+    .page("http://141.147.1.249:3000");
 
 // ADD 
 test("Add operation", async t => {
