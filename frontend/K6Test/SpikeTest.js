@@ -2,7 +2,7 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 
-const BASE_URL = 'http://144.24.177.98:5153'; 
+const BASE_URL = 'http://141.147.1.249:5153'; 
 
 export const options = {
   stages: [
